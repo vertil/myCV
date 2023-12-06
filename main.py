@@ -49,13 +49,19 @@ class facesDB(Base):
     personal_id = Column(Integer)
 
 
-
 class face_check(Base):
     __tablename__ = "in_out_date"
 
     time = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
     per_id = Column(Integer)
     cam_id = Column(Integer)
+
+
+class undef_face(Base):
+    __tablename__ = "undendified_faces"
+    time = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
+    cam_id = Column(Integer)
+    file = Column(BYTEA)
 
 
 def get_faces():
@@ -86,6 +92,9 @@ def find_faces(known_faces, new_faces):
 
 if __name__ == '__main__':
 
+
+
+
     # img = fa_re.load_image_file("images\\me2.jpg")
     # face_encoding = fa_re.face_encodings(img)[0]
     #
@@ -107,6 +116,7 @@ if __name__ == '__main__':
     print(ids)
 
     video_capture = cv2.VideoCapture(0)
+
     #video_capture = cv2.VideoCapture("rtsp://192.168.100.8:8554/webcam.h264")
 
     process_this_frame = True
@@ -121,15 +131,17 @@ if __name__ == '__main__':
             rgb_small_frame = np.ascontiguousarray(small_frame[:, :, ::-1])
 
             face_locations = fa_re.face_locations(rgb_small_frame)
+
+            if len(face_locations)==0:
+                continue
+
             face_encodings = fa_re.face_encodings(rgb_small_frame, face_locations, model="small")
 
             t1 = time.time()
 
-            pos=0
+
             for face_new in face_encodings:
-                time.sleep(0.5)
-                print(pos)
-                pos+=1
+                #time.sleep(0.5)
                 matches = fa_re.compare_faces(faces, face_new)
 
                 if True in matches:
@@ -144,6 +156,14 @@ if __name__ == '__main__':
                     session.commit()
 
                 else:
+
+
+                    face_unden = undef_face(
+                        cam_id =1,
+                        file= cv2.imencode('.png', frame)[1].tobytes()
+                    )
+                    session.add(face_unden)
+                    session.commit()
                     print('unknown')
 
             print(f"{time.time()-t1}")

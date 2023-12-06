@@ -44,6 +44,8 @@ sudo docker run -p 5432:5432 -e POSTGRES_USER=userP -e POSTGRES_PASSWORD=mypass 
 ffmpeg path :C:\ffmpeg\bin  
 
 
+# before start ffmpegtranstaltion start C:\Users\Kirill\Videos\rtsp\mediamtx.exe
+
 # git list of devices
     ffmpeg -list_devices true -f dshow -i dummy
 
