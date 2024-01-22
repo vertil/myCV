@@ -1,0 +1,99 @@
+    # nparr = np.frombuffer(ans.file, np.uint8)
+    # bytes = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    # cv2.imshow('sas', bytes)
+    # cv2.waitKey(0)
+    # sys.exit()
+
+    # /////////////////////////////////////
+
+    # old load image like ???purple colors???
+    # img = fa_re.load_image_file("images\\f.png")
+    # face_encoding = fa_re.face_encodings(img)[0]
+
+    # img2=cv2.imread("images\\me3.png")
+    # face_encoding2 = fa_re.face_encodings(img2)[0]
+    #
+    # #add new face
+    # face_add = facesDB(
+    #     face_data = face_encoding2,
+    #     file =  cv2.imencode('.png', img2)[1].tobytes(),
+    #     personal_id = 1
+    # )
+    #
+    # session.add(face_add)
+    # session.commit()
+    #
+    # sys.exit()
+    # /////////////////////////////////////
+
+    # cams=[1,4,5,6,7,8,5,6,7,8,3,4]
+    # cams = [15,16,7,6,3,2,11,14,9,8,15,16,13,12,1,4,5,10]
+    # cams = [7,10,13,14,15,16,9,6,3,2,11,12,5,8,13,12,5,8,15,16,7,10]
+    # cabs=[1,2,2,3,1,3,1,1,3]
+
+    # cabs=[[5,datetime.datetime.strptime("2024-01-05 7:59:44.015","%Y-%m-%d %H:%M:%S.%f")],
+    #       [10, datetime.datetime.strptime("2024-01-05 8:21:57.015","%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [13, datetime.datetime.strptime("2024-01-05 8:23:54.57","%Y-%m-%d %H:%M:%S.%f")],
+    #       [12, datetime.datetime.strptime("2024-01-05 9:13:7.75","%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [1, datetime.datetime.strptime("2024-01-05 9:14:13.145","%Y-%m-%d %H:%M:%S.%f")],
+    #       [4, datetime.datetime.strptime("2024-01-05 9:35:19.55","%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [5, datetime.datetime.strptime("2024-01-05 9:49:7.83","%Y-%m-%d %H:%M:%S.%f")],
+    #       [6, datetime.datetime.strptime("2024-01-05 10:23:44.38","%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [3, datetime.datetime.strptime("2024-01-05 10:27:54.57", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [2, datetime.datetime.strptime("2024-01-05 10:35:7.75", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [11, datetime.datetime.strptime("2024-01-05 10:37:13.145", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [14, datetime.datetime.strptime("2024-01-05 11:35:19.55", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [9, datetime.datetime.strptime("2024-01-05 11:36:7.83", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [6, datetime.datetime.strptime("2024-01-05 11:48:44.38", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [3, datetime.datetime.strptime("2024-01-05 11:49:54.57", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [4, datetime.datetime.strptime("2024-01-05 11:56:7.75", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [5, datetime.datetime.strptime("2024-01-05 12:01:13.145", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [10, datetime.datetime.strptime("2024-01-05 12:48:19.55", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [7, datetime.datetime.strptime("2024-01-05 12:03:7.83", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [6, datetime.datetime.strptime("2024-01-05 12:55:44.38", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [13, datetime.datetime.strptime("2024-01-05 13:01:54.57", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [14, datetime.datetime.strptime("2024-01-05 13:59:7.75", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [9, datetime.datetime.strptime("2024-01-05 14:02:13.145", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [6, datetime.datetime.strptime("2024-01-05 14:58:19.55", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #       [3, datetime.datetime.strptime("2024-01-05 15:01:7.83", "%Y-%m-%d %H:%M:%S.%f")],
+    #       [4, datetime.datetime.strptime("2024-01-05 16:03:44.38", "%Y-%m-%d %H:%M:%S.%f")],
+    #
+    #
+    #
+    #       [5, datetime.datetime.strptime("2024-01-05 16:04:6.11","%Y-%m-%d %H:%M:%S.%f")],
+    #       [8, datetime.datetime.strptime("2024-01-05 16:52:47.88","%Y-%m-%d %H:%M:%S.%f")]
+    #       ]
+    #
+    # for i in cabs:
+    #
+    #     face_add = face_check(
+    #         per_id=3,
+    #         cam_id=i[0],
+    #         time=i[1]
+    #     )
+    #
+    #     # session.add(face_add)
+    #     # session.commit()
+    #     #
+    #     # face_add = face_check(
+    #     #     per_id=i,
+    #     #     cam_id=16
+    #     # )
+    #
+    #     session.add(face_add)
+    #     session.commit()
+    #
+    # sys.exit()
+    # ////////////////////////////////////

@@ -4,8 +4,14 @@ save data in postgres - https://stackoverflow.com/questions/60278766/best-way-to
 https://machinelearningmastery.com/how-to-save-a-numpy-array-to-file-for-machine-learning/  
 https://stackoverflow.com/questions/28439701/how-to-save-and-load-numpy-array-data-properly  
   
-sudo docker run -p 5432:5432 -e POSTGRES_USER=userP -e POSTGRES_PASSWORD=mypass -e POSTGRES_DB=facedb -d postgres
+# create POSTGREDB
+    sudo docker run -p 5432:5432 -e POSTGRES_USER=userP -e POSTGRES_PASSWORD=mypass -e POSTGRES_DB=facedb -d postgres
 
+# crete db file in container
+     pg_dump --host "192.168.126.130" --port "5432" --username "userP"  "facedb" > testDB.sql
+
+# copy db file from container
+    sudo docker cp 91a99e6b742a:testDB.sql ./
 
 # get photo from db
     ans = session.query(facesDB).all()

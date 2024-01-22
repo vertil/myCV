@@ -5,8 +5,9 @@ import face_recognition as fa_re
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
-from sqlalchemy.dialects.postgresql import BYTEA
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Text
+from sqlalchemy.dialects.postgresql import BYTEA, ARRAY, CIDR
+from sqlalchemy.sql import text
 
 from sqlalchemy.orm import declarative_base
 
@@ -23,21 +24,45 @@ import socketserver
 import time
 
 import numpy as np
+import datetime
+import setuptools
+
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    db_url: str
+    cam_id: int
+    cam_pos: bool
+    cam_ip: str
+    door_controller: str
+
+
+print(sys.path)
+
+settings = Settings(
+    _env_file='.env',
+)
 
 
 # DB settings-------------------------------------------------
-db_url = 'postgresql://userP:mypass@192.168.126.130:5432/facedb'
-engine = create_engine(
-    db_url, pool_size=10, max_overflow=20
-)
-Session = sessionmaker(
-    engine,
-    autocommit=False,
-    autoflush=False,
-)
-session = Session()
+#db_url = 'postgresql://userP:mypass@192.168.126.130:5432/facedb'
+db_url = 'postgresql://userP:mypass@192.168.126.131:5432/facedb'
 
-Base = declarative_base()
+engine = create_engine(
+    settings.db_url, pool_size=10, max_overflow=20
+)
+
+try:
+    Session = sessionmaker(
+        engine,
+        autocommit=False,
+        autoflush=False,
+    )
+    session = Session()
+
+    Base = declarative_base()
+except Exception as e:
+    print("dasd")
 
 # classes for DB-----------------------------------------------
 class facesDB(Base):
@@ -48,20 +73,40 @@ class facesDB(Base):
     face_data = Column(BYTEA)
     personal_id = Column(Integer)
 
+class cabinetsDB(Base):
+    __tablename__ = "cabinets"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Text)
+    floor = Column(Integer)
+    dep_id = Column(Integer)
+    pers_ids = Column(ARRAY(Integer))
+    passages = Column(Integer)
 
 class face_check(Base):
     __tablename__ = "in_out_date"
 
-    time = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
+    time = Column(DateTime, default=datetime.datetime.now, primary_key=True)
     per_id = Column(Integer)
     cam_id = Column(Integer)
 
 
 class undef_face(Base):
     __tablename__ = "undendified_faces"
-    time = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
+    time = Column(DateTime, default=datetime.datetime.now, primary_key=True)
     cam_id = Column(Integer)
     file = Column(BYTEA)
+
+class camerasDB(Base):
+    __tablename__ = "cameras"
+
+    id = Column(Integer, primary_key=True)
+    cam_model = Column(Text)
+    addr = Column(CIDR)
+    cab_id = Column(Integer)
+    in_pos = Column(Boolean)
+    pass_num = Column(Integer)
+    status = Column(Boolean)
 
 
 def get_faces():
@@ -92,30 +137,55 @@ def find_faces(known_faces, new_faces):
 
 if __name__ == '__main__':
 
+    repeat = True
+    while repeat:
+        try:
+            sas = session.execute(text('SELECT 1'))
+        except Exception as e:
+            print("can't connect to data base")
+            repeat=True
+            time.sleep(5)
+        else:
+            repeat=False
+
+    repeat = True
+    while repeat:
+        ids, faces = get_faces()
+
+        if (len(faces)==0):
+            repeat=True
+            time.sleep(5)
+        else:
+            repeat=False
+
+    #getting cab_s allowed persons
+    camera_i=session.query(camerasDB).filter(camerasDB.id==settings.cam_id).first()
 
 
+    cab_id=camera_i.cab_id
+    print(cab_id)
 
-    # img = fa_re.load_image_file("images\\me2.jpg")
-    # face_encoding = fa_re.face_encodings(img)[0]
-    #
-    #
-    # #add new face
-    # face_add = facesDB(
-    #     face_data = face_encoding,
-    #     file = cv2.imencode('.png', img)[1].tobytes(),
-    #     personal_id = 1
-    # )
-    #
-    # session.add(face_add)
-    # session.commit()
-    #
-    # sys.exit()
+    allowed_pers = session.query(cabinetsDB.pers_ids).filter(cabinetsDB.id==cab_id).all()
 
-    # ////////////////////////////////////
-    ids, faces = get_faces()
-    print(ids)
+    allowed_pers=allowed_pers[0][0]
+    if len(allowed_pers)==0:
+        sys.exit()
 
-    video_capture = cv2.VideoCapture(0)
+
+    video_capture = cv2.VideoCapture(settings.cam_ip)
+    repeat = True
+    while repeat:
+        try:
+            ret, frame = video_capture.read()
+        except:
+            repeat=True
+            camera_i.status=False
+            session.commit()
+        else:
+            camera_i.status=True
+            session.commit()
+            repeat=False
+
 
     #video_capture = cv2.VideoCapture("rtsp://192.168.100.8:8554/webcam.h264")
 
@@ -149,17 +219,22 @@ if __name__ == '__main__':
                     print(f'id={ p_id }')
                     face_add = face_check(
                         per_id=p_id,
-                        cam_id =1
+                        cam_id =settings.cam_id
                     )
 
                     session.add(face_add)
                     session.commit()
 
+                    if settings.cam_pos==True and p_id in allowed_pers:
+                        #opendoor()
+                        print("OPEN DOOR")
+                        pass
+
                 else:
 
 
                     face_unden = undef_face(
-                        cam_id =1,
+                        cam_id =settings.cam_id,
                         file= cv2.imencode('.png', frame)[1].tobytes()
                     )
                     session.add(face_unden)
