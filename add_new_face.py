@@ -45,7 +45,7 @@ class facesDB(Base):
     personal_id = Column(Integer)
 
 
-img2=cv2.imread("images\\me3.png")
+img2=cv2.imread("images\\me4.png")
 face_encoding2 = fa_re.face_encodings(img2)[0]
 
 #add new face
